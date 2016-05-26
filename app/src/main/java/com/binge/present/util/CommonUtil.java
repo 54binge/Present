@@ -8,7 +8,7 @@ import org.joda.time.Days;
  */
 public class CommonUtil {
     public static int getDays() {
-        DateTime sT = new DateTime(2016, 5, 1, 0, 0, 0);
+        DateTime sT = new DateTime(2016, 3, 12, 0, 0, 0);
         DateTime eT = new DateTime(System.currentTimeMillis());
         Days days = Days.daysBetween(sT, eT);
         return days.getDays();
