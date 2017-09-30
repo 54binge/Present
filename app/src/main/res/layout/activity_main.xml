@@ -1,4 +1,5 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:htext="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -14,7 +15,7 @@
         android:textColor="#33b5e5"
         android:textSize="50sp"
         android:textStyle="bold"
-        htext:animateType="typer" />
+        htext:animateType="typer"/>
 
     <com.hanks.htextview.HTextView
         android:id="@+id/days_tv"
@@ -22,12 +23,25 @@
         android:layout_height="140dp"
         android:layout_centerInParent="true"
         android:background="@drawable/day_bg2"
-        android:visibility="invisible"
         android:gravity="center"
         android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"
-        htext:animateType="anvil" />
+        android:visibility="invisible"
+        htext:animateType="anvil"/>
 
+    <com.binge.present.widget.EnterAnimLayout
+        android:id="@+id/enter_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        htext:isVisibleAtFirst="false">
+
+        <ImageView
+            android:id="@+id/image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"/>
+
+    </com.binge.present.widget.EnterAnimLayout>
 
 </RelativeLayout>
