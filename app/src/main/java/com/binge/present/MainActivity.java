@@ -3,12 +3,16 @@ package com.binge.present;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.content.res.AssetManager;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 
 import com.binge.present.anim.Anim;
@@ -31,6 +35,7 @@ import com.binge.present.util.CommonUtil;
 import com.binge.present.widget.EnterAnimLayout;
 import com.hanks.htextview.HTextView;
 
+import java.io.IOException;
 import java.util.Random;
 
 import butterknife.BindView;
@@ -59,6 +64,10 @@ public class MainActivity extends BaseActivity {
     private Anim[] mAnims;
     private Random mRandom = new Random();
     private Anim lastAnim;
+    private String[] mPics;
+    private String lastPic;
+    private AlphaAnimation mAlphaAnimation;
+    private AssetManager mAssetManager;
 
     private Handler handler = new Handler() {
         @Override
@@ -82,21 +91,21 @@ public class MainActivity extends BaseActivity {
                 case 3:
                     mIntroTitle.setVisibility(View.GONE);
                     mDaysTV.setVisibility(View.GONE);
-                    handler.sendEmptyMessage(6);
+                    handler.sendEmptyMessage(4);
                     break;
                 case 4:
+                    try {
+                        String pic = getPic();
+                        Log.d(TAG, "handleMessage: " + pic);
+                        mImageView.setImageBitmap(BitmapFactory.decodeStream(mAssetManager.open(pic)));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     getAnim().startAnimation(3000);
                     handler.sendEmptyMessageDelayed(5, 6000);
                     break;
                 case 5:
-                    //替换成空图在执行一次
-
-//                    lastAnim.startAnimation(2000);
-                    handler.sendEmptyMessageDelayed(6, 2000);
-                    break;
-                case 6:
-                    mImageView.setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.day_bg2));
-                    handler.sendEmptyMessage(4);
+                    mImageView.startAnimation(mAlphaAnimation);
                     break;
             }
 
@@ -110,8 +119,10 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         startService(new Intent(this, MusicPlayService.class));
+        mAssetManager = getAssets();
 
         initAnim();
+        initPic();
     }
 
     @Override
@@ -128,10 +139,8 @@ public class MainActivity extends BaseActivity {
         if (lastAnim != anim) {
             lastAnim = anim;
             return anim;
-        } else {
-            getAnim();
         }
-        return anim;
+        return getAnim();
     }
 
     private void playBoardAnim(View target) {
@@ -166,5 +175,49 @@ public class MainActivity extends BaseActivity {
                 new AnimXiangNeiRongJie(mEnterAnimLayout),
                 new AnimYuanXingKuoZhan(mEnterAnimLayout)
         };
+
+        mAlphaAnimation = new AlphaAnimation(1f, 0f);
+        mAlphaAnimation.setDuration(2000);
+        mAlphaAnimation.setFillAfter(false);
+        mAlphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                handler.sendEmptyMessage(4);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+    }
+
+    private void initPic() {
+        try {
+            String[] pics = mAssetManager.list("pic");
+            mPics = new String[pics.length];
+            for (int i = 0; i < pics.length; i++) {
+                mPics[i] = "pic/" + pics[i];
+            }
+        } catch (IOException e) {
+            Log.d(TAG, "getPic: null");
+            e.printStackTrace();
+        }
+    }
+
+    private String getPic() {
+        int i = mRandom.nextInt(mPics.length);
+        if (!TextUtils.equals(lastPic, mPics[i])) {
+            lastPic = mPics[i];
+            Log.d(TAG, "getPic: " + i + " " + mPics[i]);
+            return mPics[i];
+        }
+
+        return getPic();
     }
 }

@@ -7,6 +7,7 @@ import android.content.res.AssetManager;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.Random;
@@ -58,23 +59,25 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
         if (mediaPlayer != null) {
             mediaPlayer.reset();
             setDataRes(mediaPlayer);
+        } else {
+            Log.d(TAG, "onCompletion: mediaPlayer = null");
         }
     }
 
     private AssetFileDescriptor getPlaySource() {
         int i = mRandom.nextInt(dataSource.length);
         AssetFileDescriptor data = dataSource[i];
-        if (lastSource == data) {
-            getPlaySource();
-        } else {
+        if (lastSource != data) {
             lastSource = data;
             return data;
+
         }
-        return null;
+        return getPlaySource();
     }
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
         mMediaPlayer.stop();
         mMediaPlayer.release();
         super.onDestroy();
@@ -83,7 +86,11 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         if (mp != null) {
-            mp.release();
+            Log.d(TAG, "onError: " + what + " " + extra);
+            mp.reset();
+            setDataRes(mp);
+        } else {
+            Log.d(TAG, "onError: mp = null");
         }
         return false;
     }
@@ -95,6 +102,9 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
                 mediaPlayer.setDataSource(playSource.getFileDescriptor(), playSource.getStartOffset(), playSource.getLength());
                 mediaPlayer.prepare();
                 mediaPlayer.start();
+            } else {
+                Log.d(TAG, "setDataRes: playSource = null");
+                setDataRes(mediaPlayer);
             }
         } catch (Exception e) {
             e.printStackTrace();

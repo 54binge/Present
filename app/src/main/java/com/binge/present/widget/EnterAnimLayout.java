@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 import com.binge.present.R;
 import com.binge.present.anim.Anim;
@@ -16,7 +14,7 @@ import com.binge.present.anim.Anim;
  * Created by wpm on 2017/4/1.
  */
 
-public class EnterAnimLayout extends RelativeLayout {
+public class EnterAnimLayout extends FrameLayout {
     private Anim anim; //需要播放的动画类型
     private long startTime = 0;//开始时间
     private boolean mIsAnimationRun = false;//开始播放动画的标志位，设置为true，然后invalidate即开始播放动画
